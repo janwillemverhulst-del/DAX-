@@ -1,0 +1,28 @@
+name: DAX MACD Signal
+
+on:
+  schedule:
+    - cron: '30 16 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  signal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code holen
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bibliotheken installieren
+        run: pip install yfinance pandas
+
+      - name: Signal berechnen und senden
+        env:
+          EMAIL_FROM:     ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO:       ${{ secrets.EMAIL_TO }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python macd_signal.py
