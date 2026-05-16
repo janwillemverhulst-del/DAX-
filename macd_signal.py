@@ -30,8 +30,8 @@ def get_signal(prices):
     prev_macd  = macd.iloc[-2]
     prev_sig   = signal_line.iloc[-2]
     
-    cross_below = prev_macd >= prev_sig and today_macd < today_sig  # Bearish → Hedge
-    cross_above = prev_macd <= prev_sig and today_macd > today_sig  # Bullish → Frei
+    cross_below = bool(prev_macd >= prev_sig) and bool(today_macd < today_sig)
+    cross_above = bool(prev_macd <= prev_sig) and bool(today_macd > today_sig)
     
     if cross_below:
         return "HEDGE", today_macd, today_sig, prices.iloc[-1]
@@ -39,7 +39,7 @@ def get_signal(prices):
         return "FREI", today_macd, today_sig, prices.iloc[-1]
     else:
         # Kein Crossover - trotzdem Status melden
-        status = "ABSICHERN (laufend)" if today_macd < today_sig else "LONG (laufend)"
+        status = "ABSICHERN (laufend)" if bool(today_macd < today_sig) else "LONG (laufend)"
         return status, today_macd, today_sig, prices.iloc[-1]
 
 # --- E-Mail senden ---
