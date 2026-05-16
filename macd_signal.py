@@ -22,26 +22,24 @@ def get_dax_data():
     return dax["Close"].dropna()
 
 # --- Signal ermitteln ---
-def get_signal(prices):
+ def get_signal(prices):
     macd, signal_line, hist = calc_macd(prices)
     
-    today_macd = macd.iloc[-1]
-    today_sig  = signal_line.iloc[-1]
-    prev_macd  = macd.iloc[-2]
-    prev_sig   = signal_line.iloc[-2]
+    today_macd = float(macd.iloc[-1])
+    today_sig  = float(signal_line.iloc[-1])
+    prev_macd  = float(macd.iloc[-2])
+    prev_sig   = float(signal_line.iloc[-2])
     
-    cross_below = bool(prev_macd >= prev_sig) and bool(today_macd < today_sig)
-    cross_above = bool(prev_macd <= prev_sig) and bool(today_macd > today_sig)
+    cross_below = prev_macd >= prev_sig and today_macd < today_sig
+    cross_above = prev_macd <= prev_sig and today_macd > today_sig
     
     if cross_below:
-        return "HEDGE", today_macd, today_sig, prices.iloc[-1]
+        return "HEDGE", today_macd, today_sig, float(prices.iloc[-1])
     elif cross_above:
-        return "FREI", today_macd, today_sig, prices.iloc[-1]
+        return "FREI", today_macd, today_sig, float(prices.iloc[-1])
     else:
-        # Kein Crossover - trotzdem Status melden
-        status = "ABSICHERN (laufend)" if bool(today_macd < today_sig) else "LONG (laufend)"
-        return status, today_macd, today_sig, prices.iloc[-1]
-
+        status = "ABSICHERN (laufend)" if today_macd < today_sig else "LONG (laufend)"
+        return status, today_macd, today_sig, float(prices.iloc[-1])
 # --- E-Mail senden ---
 def send_email(signal, macd_val, sig_val, dax_level):
     sender    = os.environ["EMAIL_FROM"]
