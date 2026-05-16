@@ -17,7 +17,10 @@ def calc_macd(prices, fast=19, slow=39, signal=9):
 
 def get_dax_data():
     dax = yf.download("^GDAXI", period="6mo", interval="1d", progress=False)
-    return dax["Close"].dropna()
+    close = dax["Close"]
+if isinstance(close.columns if hasattr(close, 'columns') else [], object):
+    close = close.iloc[:, 0]
+return close.dropna()
 
 def get_signal(prices):
     macd, signal_line, hist = calc_macd(prices)
