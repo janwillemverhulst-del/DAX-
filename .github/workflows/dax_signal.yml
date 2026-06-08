@@ -5,6 +5,9 @@ on:
     - cron: '30 16 * * 1-5'
     - cron: '00 17 * * 1-5'
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   signal:
@@ -27,3 +30,12 @@ jobs:
           EMAIL_TO:       ${{ secrets.EMAIL_TO }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: python macd_signal.py
+
+      - name: Repository aktiv halten
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          echo "$(date)" > .last_run
+          git add .last_run
+          git commit -m "Keep alive: $(date '+%Y-%m-%d')" || echo "Nichts zu committen"
+          git push || echo "Push nicht nötig"
