@@ -9,7 +9,7 @@ from datetime import datetime
 def ema(series, period):
     return series.ewm(span=period, adjust=False).mean()
 
-def calc_macd(prices, fast=19, slow=39, signal=9):
+def calc_macd(prices, fast=12, slow=26, signal=9):
     macd = ema(prices, fast) - ema(prices, slow)
     signal_line = ema(macd, signal)
     hist = macd - signal_line
